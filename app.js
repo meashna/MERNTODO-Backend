@@ -14,6 +14,18 @@ const listRoutes = require("./routes/list");
 app.use(express.json());
 app.use(cors());
 
+// app.use(
+//   cors({
+//     origin: "https://merntodo-backend.vercel.app/",
+//   })
+// );
+
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Allow only your front-end origin
+  })
+);
+
 app.use("/api/v1", authRoutes);
 app.use("/api/v2", listRoutes);
 
