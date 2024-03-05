@@ -22,7 +22,7 @@ app.use(cors());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Allow only your front-end origin
+    origin: "https://merntodo-frontend.vercel.app/",
   })
 );
 
