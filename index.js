@@ -1,48 +1,46 @@
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config(); // Load environment variables from .env file
 
 const app = express();
-const path = require("path");
-const bodyParser = require("body-parser");
 
-require("dotenv").config();
+// Connection to the database
 require("./conn/conn");
 
-//Proxy setting for API
-// const { createProxyMiddleware } = require("http-proxy-middleware");
-// app.use(
-//   "/api",
-//   createProxyMiddleware({ target: "http://localhost:5173", changeOrigin: true })
-// );
-
+// Routes
 const authRoutes = require("./routes/auth");
 const listRoutes = require("./routes/list");
 
+// Middleware for parsing application/json
 app.use(express.json());
-app.use(bodyParser.json());
-app.use(cors());
 
+// Middleware for CORS
 app.use(
   cors({
-    origin: "*",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    preflightContinue: true,
-    // optionsSuccessStatus: 200,
-    // maxAge: 3600,
+    origin: "*", // Allows requests from all origins
+    credentials: true, // Allows cookies to be sent with requests
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allowed HTTP methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allowed HTTP headers
+    preflightContinue: true, // Moves the request to the next middleware if the preflight request is successful
   })
 );
 
+// Setup CORS headers for all responses
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // Allows all origins
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
+// API routes
 app.use("/api/v1", authRoutes);
 app.use("/api/v2", listRoutes);
 
-// app.use(express.static(path.resolve(__dirname, "frontend", "dist")));
-// app.get("*", (req, res) => {
-//   res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
-// });
-
+// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
